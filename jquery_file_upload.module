@@ -1,0 +1,186 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function jquery_file_upload_menu() {
+
+  $items['jquery_file_upload/upload'] = array(
+      'page callback' => 'jquery_file_uploader_upload',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function jquery_file_upload_block_info() {
+
+  $blocks['jquery_file_uploader'] = array(
+      'info' => t('jQuery File Uploader'),
+      'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Wrapper to use the form
+ */
+function jquery_file_upload() {
+  jquery_file_upload_add_configurations();
+  return drupal_get_form('jquery_file_upload_form');
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function jquery_file_upload_block_view($delta = '') {
+
+  $block = array();
+
+  switch ($delta) {
+    case 'jquery_file_uploader':
+      $block['subject'] = t('Upload');
+      $block['content'] = drupal_get_form('jquery_file_upload_form');
+      break;
+  }
+  
+  jquery_file_upload_add_configurations();
+
+  return $block;
+}
+
+/**
+ * jQuery File Upload form
+ */
+function jquery_file_upload_form() {
+
+  jquery_file_upload_load_external_js();
+  jquery_file_upload_load_css();
+
+  $form['#attributes'] = array('enctype' => 'multipart/form-data');
+
+  $form['#action'] = 'jquery_file_upload/upload';
+
+  return $form;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jquery_file_upload_theme($existing, $type, $theme, $path) {
+  return array(
+      'jquery_file_upload_form' => array(
+          // 'render element' => 'form',
+          'template' => 'jquery_file_upload-form'
+      )
+  );
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function jquery_file_upload_preprocess_jquery_file_upload_form(&$variables){
+  $variables['add_button'] = drupal_render($variables['form']['upload']);
+}
+
+/**
+ * Adds the configuration parameters to the jQuery File Upload plugin
+ */
+function jquery_file_upload_add_configurations() {
+  global $user;
+
+  $js_vars = new stdClass;
+  $js_vars->filetypes = str_replace(' ', '|', variable_get('types_supported_' . $final_role, ''));
+  $js_vars->max_file_size = variable_get('max_file_size_' . $final_role, 0) * 1024 * 1024;
+
+  jquery_file_upload_load_external_js();
+
+  jquery_file_upload_load_css();
+
+  // bootstrap init_fileuploader
+  drupal_add_js("jQuery(function(){ init_fileuploader(" . json_encode($js_vars) . "); });", "inline", "footer");
+}
+
+/**
+ * Load the required css files to the page
+ */
+function jquery_file_upload_load_css(){
+  drupal_add_css(drupal_get_path("module", "jquery_file_upload").'/main.css');
+  drupal_add_css(drupal_get_path("module", "jquery_file_upload").'/lib/css/jquery.fileupload-ui.css');
+}
+
+/**
+ * Load the required external js files to the page
+ */
+function jquery_file_upload_load_external_js(){
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/vendor/jquery.ui.widget.js");
+
+  /*
+  drupal_add_js("http://blueimp.github.com/cdn/js/bootstrap.min.js", array('type' => 'external', 'scope' => 'footer'));
+  drupal_add_js("http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js", array('type' => 'external', 'scope' => 'footer'));
+  drupal_add_js("http://blueimp.github.com/JavaScript-Templates/tmpl.min.js", array('type' => 'external', 'scope' => 'footer'));
+  drupal_add_js("http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js", array('type' => 'external', 'scope' => 'footer'));
+  drupal_add_js("http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js", array('type' => 'external', 'scope' => 'footer'));
+  */
+  
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.iframe-transport.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.fileupload.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.fileupload-fp.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.fileupload-ui.js");
+
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/main.js");
+}
+
+function jquery_file_uploader_upload() {
+  if (array_key_exists('files', $_FILES)) {
+
+    global $base_url, $user;
+
+    //check for folders
+    $current_directory = getcwd();
+    if (!file_exists($current_directory . '/' . variable_get('file_public_path', conf_path() . '/files') . '/file_uploads')) {
+      $result = mkdir($current_directory . '/' . variable_get('file_public_path', conf_path() . '/files') . '/file_uploads');
+    }
+    if (!file_exists($current_directory . '/' . variable_get('file_public_path', conf_path() . '/files') . '/file_uploads/' . $user->uid)) {
+      $result = mkdir($current_directory . '/' . variable_get('file_public_path', conf_path() . '/files') . '/file_uploads/' . $user->uid);
+    }
+
+    $secure_file_name = file_munge_filename($_FILES['files']['name'][0], "gif jpeg jpg png tiff asf avi mpeg mpg wmv vob mov mp4 flv txt doc docx xls xlsx ppt pptx mp3 zip");
+
+    $destination_uri = 'sites/default/files/file_uploads';
+
+    $file = file_save_upload(0, array(), $destination_uri);
+
+    if ($file) {
+      //add node
+     
+      $filenamexx = explode(".", $_FILES['files']['name'][0]);
+     
+      $file->display = 1;
+
+      $token = drupal_get_token($secure_file_name);
+      $file->url = $base_url . '/sites/default/files/file_uploads/' . $secure_file_name;
+
+      watchdog('jquery', print_r($file, true));
+
+      return drupal_json(array($file));
+    }
+  }
+}
+
+function _json_output($var = NULL) {
+  // We are returning JSON, so tell the browser.
+  drupal_set_header('Content-Type', 'application/json');
+
+  if (isset($var)) {
+    return drupal_to_js($var);
+  }
+}
+
+
+

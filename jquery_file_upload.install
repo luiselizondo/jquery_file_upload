@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @file
+ * Install, and uninstall functions for the jquery_file_upload module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function jquery_file_upload_requirements($phase) {
+  $requirements = array();
+
+  $t = get_t();
+
+  if ($phase == 'install') {
+    $exists = jquery_file_upload_library_exists();
+    if ($exists) {
+      $requirements['jquery_file_upload'] = array(
+          'title' => $t('jQuery File Upload'),
+          'description' => "jQuery File Upload plugin installed successfully",
+          'severity' => REQUIREMENT_OK,
+      );
+    }
+    else {
+      $requirements['jquery_file_upload'] = array(
+          'title' => $t('jQuery File Upload'),
+          'description' => "jQuery File Upload plugin needs to be installed, please download from <a href='https://github.com/compujohnny/jQuery-File-Upload/archive/master.zip'>https://github.com/compujohnny/jQuery-File-Upload/archive/master.zip</a> then extract and copy the css, js and img folders in the modules directory under jquery_file_upload/lib",
+          'severity' => REQUIREMENT_ERROR,
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Check that all library file required exists
+ */
+function jquery_file_upload_library_exists() {
+
+  $base_lib_path = DRUPAL_ROOT.'/'.drupal_get_path('module', 'jquery_file_upload').'/lib';
+/*
+  return  file_exists($base_lib_path  . '/js/jquery.fileupload.js') &&
+          file_exists($base_lib_path . '/js/jquery.fileupload-ui.js') &&
+          file_exists($base_lib_path . '/js/jquery.fileupload-fp.js') &&
+          file_exists($base_lib_path . '/js/jquery.iframe-transport.js') &&
+          file_exists($base_lib_path . '/js/vendor/jquery.ui.widget.js') &&
+          file_exists($base_lib_path . '/js/cors/jquery.postmessage-transport.js') &&
+          file_exists($base_lib_path . '/css/jquery.fileupload-ui-noscript.css') &&
+          file_exists($base_lib_path . '/css/jquery.fileupload-ui.css');
+  */        
+  return TRUE;
+}
