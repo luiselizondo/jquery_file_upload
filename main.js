@@ -1,4 +1,3 @@
-
 function init_fileuploader(vars) {
   var types = vars.filetypes;
   var pattern = new RegExp("(\.|\/)(" + types + ")$");

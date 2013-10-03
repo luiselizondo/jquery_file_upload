@@ -156,9 +156,7 @@ function jquery_file_uploader_upload() {
 
     $file = file_save_upload(0, array(), $destination_uri);
 
-    if ($file) {
-      //add node
-     
+    if ($file) {     
       $filenamexx = explode(".", $_FILES['files']['name'][0]);
      
       $file->display = 1;
@@ -172,15 +170,3 @@ function jquery_file_uploader_upload() {
     }
   }
 }
-
-function _json_output($var = NULL) {
-  // We are returning JSON, so tell the browser.
-  drupal_set_header('Content-Type', 'application/json');
-
-  if (isset($var)) {
-    return drupal_to_js($var);
-  }
-}
-
-
-
