@@ -31,22 +31,9 @@ function jquery_file_upload_block_info() {
  * Wrapper to use the form
  */
 function jquery_file_upload() {
+  // return the template, does not include a form
   jquery_file_upload_add_configurations();
-  return drupal_get_form('jquery_file_upload_form');
-}
-
-/**
- * jQuery File Upload form
- */
-function jquery_file_upload_form() {
-
-  jquery_file_upload_load_external_js();
-  jquery_file_upload_load_css();
-
-  $form['#attributes'] = array('enctype' => 'multipart/form-data');
-  $form['#action'] = 'jquery_file_upload/upload';
-
-  return $form;
+  return theme('jquery_file_upload_form');
 }
 
 /**
@@ -55,8 +42,7 @@ function jquery_file_upload_form() {
 function jquery_file_upload_theme($existing, $type, $theme, $path) {
   return array(
       'jquery_file_upload_form' => array(
-          // 'render element' => 'form',
-          'template' => 'jquery_file_upload-form'
+        'template' => 'jquery_file_upload-form'
       )
   );
 }
@@ -65,7 +51,7 @@ function jquery_file_upload_theme($existing, $type, $theme, $path) {
  * Implements hook_preprocess_HOOK().
  */
 function jquery_file_upload_preprocess_jquery_file_upload_form(&$variables){
-  $variables['add_button'] = drupal_render($variables['form']['upload']);
+  // $variables['add_button'] = drupal_render($variables['form']['upload']);
 }
 
 /**
@@ -92,7 +78,6 @@ function jquery_file_upload_add_configurations() {
  * Load the required css files to the page
  */
 function jquery_file_upload_load_css(){
-  drupal_add_css(drupal_get_path("module", "jquery_file_upload").'/main.css');
   drupal_add_css(drupal_get_path("module", "jquery_file_upload").'/vendor/jquery_file_upload/css/jquery.fileupload-ui.css');
 }
 
@@ -111,8 +96,6 @@ function jquery_file_upload_load_external_js(){
   drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/jquery.fileupload.js");
   drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/jquery.fileupload-fp.js");
   drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/jquery.fileupload-ui.js");
-
-  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/main.js");
 }
 
 function jquery_file_uploader_upload() {

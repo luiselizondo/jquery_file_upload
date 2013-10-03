@@ -27,7 +27,7 @@
     <input class="toggle" type="checkbox">
   </div>
   <!-- The global progress information -->
-  <div class="span5 fileupload-progress">
+  <div class="span5 fileupload-progress fade">
     <!-- The global progress bar -->
     <div id="progress" class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
       <div id="progress-bar" class="bar" style="width:0%;"></div>
