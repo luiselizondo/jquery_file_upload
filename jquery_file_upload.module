@@ -36,25 +36,6 @@ function jquery_file_upload() {
 }
 
 /**
- * Implements hook_block_view().
- */
-function jquery_file_upload_block_view($delta = '') {
-
-  $block = array();
-
-  switch ($delta) {
-    case 'jquery_file_uploader':
-      $block['subject'] = t('Upload');
-      $block['content'] = drupal_get_form('jquery_file_upload_form');
-      break;
-  }
-  
-  jquery_file_upload_add_configurations();
-
-  return $block;
-}
-
-/**
  * jQuery File Upload form
  */
 function jquery_file_upload_form() {
@@ -63,7 +44,6 @@ function jquery_file_upload_form() {
   jquery_file_upload_load_css();
 
   $form['#attributes'] = array('enctype' => 'multipart/form-data');
-
   $form['#action'] = 'jquery_file_upload/upload';
 
   return $form;
@@ -94,16 +74,18 @@ function jquery_file_upload_preprocess_jquery_file_upload_form(&$variables){
 function jquery_file_upload_add_configurations() {
   global $user;
 
-  $js_vars = new stdClass;
-  $js_vars->filetypes = str_replace(' ', '|', variable_get('types_supported_' . $final_role, ''));
-  $js_vars->max_file_size = variable_get('max_file_size_' . $final_role, 0) * 1024 * 1024;
+  $js_vars = array(
+    "jquery_file_upload" => array(
+      'filetypes' => str_replace(' ', '|', variable_get('types_supported_' . $final_role, '')),
+      'max_file_size' => variable_get('max_file_size_jquery_file_upload', 0) * 1024 * 1024
+    )
+  );
 
-  jquery_file_upload_load_external_js();
+  $data = json_encode($js_vars);
+  drupal_add_js($js_vars, "setting");
 
   jquery_file_upload_load_css();
-
-  // bootstrap init_fileuploader
-  drupal_add_js("jQuery(function(){ init_fileuploader(" . json_encode($js_vars) . "); });", "inline", "footer");
+  jquery_file_upload_load_external_js();
 }
 
 /**
@@ -111,27 +93,24 @@ function jquery_file_upload_add_configurations() {
  */
 function jquery_file_upload_load_css(){
   drupal_add_css(drupal_get_path("module", "jquery_file_upload").'/main.css');
-  drupal_add_css(drupal_get_path("module", "jquery_file_upload").'/lib/css/jquery.fileupload-ui.css');
+  drupal_add_css(drupal_get_path("module", "jquery_file_upload").'/vendor/jquery_file_upload/css/jquery.fileupload-ui.css');
 }
 
 /**
  * Load the required external js files to the page
  */
 function jquery_file_upload_load_external_js(){
-  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/vendor/jquery.ui.widget.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/vendor/jquery.ui.widget.js");
 
-  /*
-  drupal_add_js("http://blueimp.github.com/cdn/js/bootstrap.min.js", array('type' => 'external', 'scope' => 'footer'));
-  drupal_add_js("http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js", array('type' => 'external', 'scope' => 'footer'));
-  drupal_add_js("http://blueimp.github.com/JavaScript-Templates/tmpl.min.js", array('type' => 'external', 'scope' => 'footer'));
-  drupal_add_js("http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js", array('type' => 'external', 'scope' => 'footer'));
-  drupal_add_js("http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js", array('type' => 'external', 'scope' => 'footer'));
-  */
+  // drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/Bootstrap-Image-Gallery-master/js/bootstrap-image-gallery.min.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/JavaScript-Templates-master/js/tmpl.min.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/JavaScript-Load-Image-master/js/load-image.min.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/JavaScript-Canvas-to-Blob-master/js/canvas-to-blob.min.js");
   
-  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.iframe-transport.js");
-  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.fileupload.js");
-  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.fileupload-fp.js");
-  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/lib/js/jquery.fileupload-ui.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/jquery.iframe-transport.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/jquery.fileupload.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/jquery.fileupload-fp.js");
+  drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/jquery.fileupload-ui.js");
 
   drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/main.js");
 }
