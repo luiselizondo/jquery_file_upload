@@ -88,7 +88,7 @@ function jquery_file_upload_load_external_js(){
   drupal_add_js(drupal_get_path("module", "jquery_file_upload")."/vendor/jquery_file_upload/js/vendor/jquery.ui.widget.js");
 
   // drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/Bootstrap-Image-Gallery-master/js/bootstrap-image-gallery.min.js");
-  drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/JavaScript-Templates-master/js/tmpl.min.js");
+  // drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/JavaScript-Templates-master/js/tmpl.min.js");
   drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/JavaScript-Load-Image-master/js/load-image.min.js");
   drupal_add_js(drupal_get_path("module", "jquery_file_upload") . "/vendor/JavaScript-Canvas-to-Blob-master/js/canvas-to-blob.min.js");
   
