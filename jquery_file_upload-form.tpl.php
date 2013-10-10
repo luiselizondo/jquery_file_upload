@@ -20,8 +20,8 @@
       <input type="file" name="files[]" multiple>
     </span>
     
-    <button class="btn btn-default cancel" id="descartar-archivos">
+    <a class="btn btn-default cancel" id="descartar">
       <span>Cancelar</span>
-    </button>
+    </a>
   </div>
 </div>
