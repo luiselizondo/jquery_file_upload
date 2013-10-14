@@ -17,7 +17,7 @@
     <span class="btn btn-success fileinput-button">
       <span class="glyphicon glyphicon-open"></span>
       <span>Agregar archivo...</span>
-      <input type="file" name="files[]" multiple>
+      <input id="jquery-upload-files" type="file" name="files[]" multiple>
     </span>
     
     <a class="btn btn-default cancel" id="descartar">
